@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renter Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('<?= base_url("public/assets/images/car4.jpg") ?>');
+			background-size: 1600px 1000x;
+			background-repeat: no-repeat;
+
+		
+        }
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background: #333;
+            color: white;
+            position: fixed;
+            padding: 20px;
+        }
+        .sidebar h2 {
+            text-align: center;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 15px;
+            border-bottom: 1px solid #555;
+        }
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+        .sidebar ul li:hover {
+            background: #575757;
+        }
+        .main-content {
+            margin-left: 270px;
+            padding: 20px;
+        }
+        .dashboard {
+            
+            padding: 20px;
+            border-radius: 50px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Car Rental Management System</h2>
+        <ul>
+            <li><a href="index.html">Homepage</a></li>
+            <li><a href="CompanyCars.html">Company Cars</a></li>
+            <li><a href="rent.html">Renter</a></li>
+            <li><a href="profile.html">Profile</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="dashboard">
+            <h2>Welcome, Renter!</h2>
+            <p>Here you can manage your rentals, view available cars, and update your profile.</p>
+        </div>
+    </div>
+</body>
+</html>
