@@ -5,29 +5,33 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index'); 
-$routes->get('/Renter/register', 'auth::register'); 
+$routes->get('/', 'Home::index');
+$routes->get('/Renter/register', 'auth::register');
 // $routes->get('/renterpage', 'auth::login'); 
-    
+
 // Authentication Routes
- // Show login page
+// Show login page
 $routes->post('/auth/loginProcess', 'Auth::loginProcess'); // Process login
 $routes->get('/logout', 'Auth::logout'); // Logout user
-$routes->get('/register', 'Auth::register'); 
+$routes->get('/register', 'Auth::register');
 $routes->post('/register', 'RegisterController::register');
 $routes->post('register/registerCompany', 'RegisterController::registerCompany');
 $routes->post('RegisterController/registerCompany', 'RegisterController::registerCompany');
-$routes->post('register/registerRenter', 'Register::registerRenter');
+$routes->post('register/registerRenter', 'RegisterController::registerRenter');
+
+// UPDATED ROUTE - ROY
+// $routes->post('RegisterController/registerRenter', 'RegisterController::registerRenter');
+
 
 $routes->get('/renterpage', 'Auth::renter');
 
 // Admin Dashboard Routes - cleaned up and organized
-$routes->group('AdminDashBoard', ['namespace' => 'App\Controllers', 'filter' => 'adminauth'], function($routes) {
+$routes->group('AdminDashBoard', ['namespace' => 'App\Controllers', 'filter' => 'adminauth'], function ($routes) {
     $routes->get('adminpage', 'Auth::adminpage');
     $routes->get('logout', 'Auth::adminLogout');
 });
 
-$routes->group('admin', ['namespace' => 'App\Controllers'], function($routes) {
+$routes->group('admin', ['namespace' => 'App\Controllers'], function ($routes) {
     $routes->get('approve/(:num)', 'AdminController::approve/$1');
     $routes->get('decline/(:num)', 'AdminController::decline/$1');
     $routes->get('approve/renter/(:num)', 'AdminController::approveRenter/$1');
@@ -44,10 +48,10 @@ $routes->get('RentalCompany/rejectRental/(:num)', 'RentalController::rejectRenta
 // $routes->get('adminpage/decline/(:num)', 'AdminController::decline/$1');
 
 // Authentication
-$routes->get('/loginpage', 'Auth::login'); 
+$routes->get('/loginpage', 'Auth::login');
 $routes->post('auth/login', 'Auth::login');
 $routes->post('auth/loginProcess', 'Auth::loginProcess');
-$routes->post('/loginProcess', 'Auth::loginProcess'); 
+$routes->post('/loginProcess', 'Auth::loginProcess');
 
 
 $routes->post('auth/login', 'Auth::loginProcess'); // Process login
@@ -113,7 +117,7 @@ $routes->get('RentalCompany/rejectRental/(:num)', 'RentalController::rejectRenta
 $routes->get('/admin/dashboard', 'AdminController::dashboard');
 
 // Car Management Routes
-$routes->group('manage-cars', ['namespace' => 'App\Controllers'], function($routes) {
+$routes->group('manage-cars', ['namespace' => 'App\Controllers'], function ($routes) {
     $routes->get('/', 'CarController::index');
     $routes->post('add', 'CarController::addCar');
     $routes->post('update-status', 'CarController::updateStatus');
@@ -140,7 +144,3 @@ $routes->get('/admin', 'AdminController::admin');
 $routes->get('/admin/dashboard', 'AdminController::dashboard');
 $routes->get('/admin/approve/(:num)', 'AdminController::approve/$1');
 $routes->get('/admin/decline/(:num)', 'AdminController::decline/$1');
-
-
-
-

@@ -6,13 +6,13 @@ use CodeIgniter\Model;
 
 class RentalModel extends Model
 {
-    protected $table = 'renters';
+    protected $table = 'rentals';
     protected $primaryKey = 'id';
     protected $useAutoIncrement = true;
     protected $returnType = 'array';
     protected $allowedFields = [
-        'car_model',
-        'plate_no',
+        'car_id',
+        'renter_id',
         'pickup_date',
         'dropoff_date',
         'pickup_location',
@@ -23,8 +23,8 @@ class RentalModel extends Model
     ];
 
     protected $validationRules = [
-        'car_model' => 'required',
-        'plate_no' => 'required',
+        'car_id' => 'required',
+        'renter_id' => 'required',
         'pickup_date' => 'required|valid_date',
         'dropoff_date' => 'required|valid_date',
         'pickup_location' => 'required',

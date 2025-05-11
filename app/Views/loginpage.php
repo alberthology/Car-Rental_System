@@ -106,8 +106,10 @@
         <div class="form-group">
           <input type="email" class="form-control" id="inputEmail" name="email" placeholder="Email Address" required><br>
         </div>
-        <div class="form-group">
-          <input type="password" class="form-control" id="inputPassword" name="password" placeholder="Password" required><br>
+        <div class="form-group password-group">
+          <input type="password" class="form-control" id="inputPassword" name="password" placeholder="Password" required>
+          <i class="fas fa-eye password-toggle"></i>
+
         </div>
         <button type="submit" class="btn-black">Log In</button>
       </form>
@@ -167,7 +169,7 @@
                 <div class="tab-content">
                   <!-- Renter Form -->
                   <div class="tab-pane fade show active" id="renter" role="tabpanel">
-                    <form action="<?= base_url('/register/registerRenter') ?>" method="post">
+                    <form action="<?= base_url('register/registerRenter') ?>" method="post">
                       <div class="row g-3">
                         <div class="col-12">
                           <input type="text" name="name" class="form-control" placeholder="Full Name" required>
@@ -177,7 +179,7 @@
                         </div>
                         <div class="col-md-6">
                           <select name="gender" class="form-select" required>
-                            <option value="">Select Gender</option>
+                            <option value="" selected hidden disabled>Select Gender</option>
                             <option value="male">Male</option>
                             <option value="female">Female</option>
                             <!-- <option value="other">Other</option> -->
@@ -262,8 +264,21 @@
 
 
   <script>
-    <?php if (session()->getFlashdata('success')) : ?>
-      toastr.success("<?= session()->getFlashdata('success') ?>");
+    <?php if (session()->getFlashdata('toastr_success')) :
+      $messages = session()->getFlashdata('toastr_success');
+      if (is_array($messages)) :
+        foreach ($messages as $msg) : ?>
+          toastr.success("<?= esc($msg) ?>");
+        <?php endforeach;
+      else : ?>
+        toastr.success("<?= esc($messages) ?>");
+    <?php endif;
+    endif; ?>
+
+    <?php if (session()->getFlashdata('toastr_info')) : ?>
+      setTimeout(function() {
+        toastr.info("<?= esc(session()->getFlashdata('toastr_info')) ?>");
+      }, 2000);
     <?php endif; ?>
 
     <?php if (session()->getFlashdata('error')) : ?>

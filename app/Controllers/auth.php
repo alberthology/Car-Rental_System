@@ -113,7 +113,9 @@ class Auth extends BaseController
 
                 $session->setFlashdata('success', 'Login successful!');
 
-                return redirect()->to('adminpage');
+                return redirect()->to('adminpage')
+                    ->with('toastr_info', 'Login successful!')
+                    ->with('toastr_success', 'Welcome back, Admin!');
             } else if ($user['role'] === 'Company' || $user['role'] === 'Renter') {
                 // Get status based on role
                 $statusTable = $user['role'] === 'Company' ? 'Company' : 'Renter';
@@ -131,7 +133,9 @@ class Auth extends BaseController
 
                     $session->setFlashdata('success', 'Login successful!');
 
-                    return redirect()->to($user['role'] === 'Company' ? 'Company' : 'Renter');
+                    return redirect()->to($user['role'] === 'Company' ? 'Company' : 'Renter')
+                        ->with('toastr_info', 'Login successful!')
+                        ->with('toastr_success', 'Welcome back, ' . $user['name'] . '!');
                 } else {
                     return redirect()->back()->with('error', 'Your account is still pending approval.');
                 }
@@ -180,15 +184,21 @@ class Auth extends BaseController
 
     public function logout()
     {
+        $userModel = new UserModel();
+
         $user_id = $this->session->get('user_id');
 
         if ($user_id) {
-            // Clear session_id in DB
-            $this->db->table('users')->where('user_id', $user_id)->update(['session_id' => null]);
+
+            /* $db = \Config\Database::connect();
+            $db->table('users')->where('user_id', $user_id)->update(['session_id' => null]); */
+
+            $userModel->update($user_id, ['session_id' => null]);
         }
 
+        $this->session->setFlashdata('success', 'You have been logged out successfully.');
+        return redirect()->to('loginpage')->with('success', 'You have been logged out successfully.');
         $this->session->destroy();
-        return redirect()->to('login')->with('success', 'You have been logged out successfully.');
     }
 
 

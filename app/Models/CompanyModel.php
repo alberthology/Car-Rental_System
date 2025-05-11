@@ -8,7 +8,7 @@ class CompanyModel extends Model
 {
     protected $table = 'company';
     protected $primaryKey = 'company_id';
-    protected $allowedFields = ['user_id', 'company_name', 'address', 'year_established', 'email', 'status'];
+    protected $allowedFields = ['user_id', 'company_name', 'address', 'year_established', 'status'];
     protected $returnType = 'array';
 
     public function updateStatus($companyId, $status)

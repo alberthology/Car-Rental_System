@@ -1,9 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
+
+
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    <!-- jQuery (required for Toastr) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -41,6 +52,7 @@
             justify-content: center;
             flex-wrap: wrap;
         }
+
         .dashboard-card {
             flex: 1;
             background: rgba(10, 67, 98, 0.74);
@@ -53,54 +65,62 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
-        
+
         .dashboard-card:hover {
             transform: scale(1.05);
             background: rgba(10, 67, 98, 0.9);
         }
-        
+
         .dashboard-card h3 {
             margin: 0 0 10px 0;
         }
-        
+
         .dashboard-card p {
             margin: 0;
             font-size: 14px;
             opacity: 0.8;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
         }
-        th, td {
+
+        th,
+        td {
             padding: 10px;
             border-bottom: 1px solid #ddd;
             text-align: left;
         }
+
         th {
             background: #34495e;
             color: white;
         }
-        .approve-btn, .decline-btn {
+
+        .approve-btn,
+        .decline-btn {
             padding: 8px 12px;
             border-radius: 10px;
             color: white;
             text-decoration: none;
             margin: 0 5px;
             margin-top: 30px;
-           
+
         }
 
         .approve-btn {
             background: #27ae60;
-            
+
         }
+
         .decline-btn {
             background: #c0392b;
             margin-left: 100px;
-            
+
         }
+
         .content-section {
             display: none;
             background: white;
@@ -108,26 +128,32 @@
             border-radius: 8px;
             margin-bottom: 20px;
         }
+
         .content-section.active {
             display: block;
         }
+
         .sidebar ul {
             list-style: none;
             padding: 0;
         }
+
         .sidebar ul li {
             padding: 15px;
             border-bottom: 1px solid #34495e;
             cursor: pointer;
         }
+
         .sidebar ul li a {
             color: white;
             text-decoration: none;
             display: block;
         }
+
         .sidebar ul li:hover {
             background: #34495e;
         }
+
         .sidebar ul li.active {
             background: rgb(36, 105, 174);
             color: white;
@@ -135,6 +161,7 @@
             border-left: none;
             border-radius: 5px;
         }
+
         .sidebar h2 {
             font-weight: bold;
             margin: 0 0 30px 0;
@@ -143,6 +170,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="sidebar">
         <h2>Admin Dashboard</h2>
@@ -171,7 +199,7 @@
                     <p>Click to view approved companies</p>
                 </div>
             </div>
-            
+
             <div class="content-section">
                 <h2>Pending Company Approvals</h2>
                 <table>
@@ -185,17 +213,16 @@
                     </thead>
                     <tbody>
                         <?php foreach ($pending_companies ?? [] as $company): ?>
-                        <tr>
-                            <td><?= esc($company['company_name']) ?></td>
-                            <td><?= esc($company['email']) ?></td>
-                            <td><?= esc($company['status']) ?></td>
-                            <td>
-                                <a href="<?= base_url('admin/approve/' . $company['company_id']) ?>" 
-                                   class="approve-btn">Approve</a>
-                                <a href="<?= base_url('admin/decline/' . $company['company_id']) ?>" 
-                                   class="decline-btn">Decline</a>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td><?= esc($company['company_name']) ?></td>
+                                <td><?= esc($company['status']) ?></td>
+                                <td>
+                                    <a href="<?= base_url('admin/approve/' . $company['company_id']) ?>"
+                                        class="approve-btn">Approve</a>
+                                    <a href="<?= base_url('admin/decline/' . $company['company_id']) ?>"
+                                        class="decline-btn">Decline</a>
+                                </td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -221,20 +248,19 @@
                         <th>Actions</th>
                     </tr>
                     <?php foreach ($pending_companies ?? [] as $company): ?>
-                    <tr>
-                        <td><?= esc($company['company_id']) ?></td>
-                        <td><?= esc($company['company_name']) ?></td>
-                        <td><?= esc($company['address']) ?></td>
-                        <td><?= esc($company['year_established']) ?></td>
-                        <td><?= esc($company['email']) ?></td>
-                        <td><?= esc($company['status']) ?></td>
-                        <td>
-                            <a href="<?= base_url('admin/approve/' . $company['company_id']) ?>" 
-                               class="approve-btn">Approve</a>
-                            <a href="<?= base_url('admin/decline/' . $company['company_id']) ?>" 
-                               class="decline-btn">Decline</a>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td><?= esc($company['company_id']) ?></td>
+                            <td><?= esc($company['company_name']) ?></td>
+                            <td><?= esc($company['address']) ?></td>
+                            <td><?= esc($company['year_established']) ?></td>
+                            <td><?= esc($company['status']) ?></td>
+                            <td>
+                                <a href="<?= base_url('admin/approve/' . $company['company_id']) ?>"
+                                    class="approve-btn">Approve</a>
+                                <a href="<?= base_url('admin/decline/' . $company['company_id']) ?>"
+                                    class="decline-btn">Decline</a>
+                            </td>
+                        </tr>
                     <?php endforeach; ?>
                 </table>
 
@@ -250,14 +276,13 @@
                         <th>Action</th>
                     </tr>
                     <?php foreach ($approved_companies ?? [] as $company): ?>
-                    <tr>
-                        <td><?= esc($company['company_id']) ?></td>
-                        <td><?= esc($company['company_name']) ?></td>
-                        <td><?= esc($company['address']) ?></td>
-                        <td><?= esc($company['year_established']) ?></td>
-                        <td><?= esc($company['email']) ?></td>
-                        <td><span style="color: #27ae60; font-weight: bold;"><?= esc($company['status']) ?></span></td>
-                    </tr>
+                        <tr>
+                            <td><?= esc($company['company_id']) ?></td>
+                            <td><?= esc($company['company_name']) ?></td>
+                            <td><?= esc($company['address']) ?></td>
+                            <td><?= esc($company['year_established']) ?></td>
+                            <td><span style="color: #27ae60; font-weight: bold;"><?= esc($company['status']) ?></span></td>
+                        </tr>
                     <?php endforeach; ?>
                 </table>
             </div>
@@ -281,23 +306,21 @@
                         <th>Actions</th>
                     </tr>
                     <?php foreach ($pending_renters ?? [] as $renter): ?>
-                    <tr>
-                        <td><?= esc($renter['renter_id']) ?></td>
-                        <td><?= esc($renter['name']) ?></td>
-                        <td><?= esc($renter['email']) ?></td>
-                        <td><?= esc($renter['phone']) ?></td>
-                        <td><?= esc($renter['address']) ?></td>
-                        <td><?= esc($renter['birthdate']) ?></td>
-                        <td><?= esc($renter['gender']) ?></td>
-                        <td><?= esc($renter['license_no']) ?></td>
-                        <td><?= esc($renter['status']) ?></td>
-                        <td>
-                            <a href="<?= base_url('admin/approve/renter/' . $renter['renter_id']) ?>" 
-                               class="approve-btn">Approve</a>
-                            <a href="<?= base_url('admin/decline/renter/' . $renter['renter_id']) ?>" 
-                               class="decline-btn">Decline</a>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td><?= esc($renter['renter_id']) ?></td>
+                            <td><?= esc($renter['phone']) ?></td>
+                            <td><?= esc($renter['address']) ?></td>
+                            <td><?= esc($renter['birthdate']) ?></td>
+                            <td><?= esc($renter['gender']) ?></td>
+                            <td><?= esc($renter['license_no']) ?></td>
+                            <td><?= esc($renter['status']) ?></td>
+                            <td>
+                                <a href="<?= base_url('admin/approve/renter/' . $renter['renter_id']) ?>"
+                                    class="approve-btn">Approve</a>
+                                <a href="<?= base_url('admin/decline/renter/' . $renter['renter_id']) ?>"
+                                    class="decline-btn">Decline</a>
+                            </td>
+                        </tr>
                     <?php endforeach; ?>
                 </table>
             </div>
@@ -317,17 +340,15 @@
                         <th>Renter Status</th>
                     </tr>
                     <?php foreach ($approved_renters ?? [] as $renter): ?>
-                    <tr>
-                        <td><?= esc($renter['renter_id']) ?></td>
-                        <td><?= esc($renter['name']) ?></td>
-                        <td><?= esc($renter['email']) ?></td>
-                        <td><?= esc($renter['phone']) ?></td>
-                        <td><?= esc($renter['address']) ?></td>
-                        <td><?= esc($renter['birthdate']) ?></td>
-                        <td><?= esc($renter['gender']) ?></td>
-                        <td><?= esc($renter['license_no']) ?></td>
-                        <td><span style="color: #27ae60; font-weight: bold;"><?= esc($renter['status']) ?></span></td>
-                    </tr>
+                        <tr>
+                            <td><?= esc($renter['renter_id']) ?></td>
+                            <td><?= esc($renter['phone']) ?></td>
+                            <td><?= esc($renter['address']) ?></td>
+                            <td><?= esc($renter['birthdate']) ?></td>
+                            <td><?= esc($renter['gender']) ?></td>
+                            <td><?= esc($renter['license_no']) ?></td>
+                            <td><span style="color: #27ae60; font-weight: bold;"><?= esc($renter['status']) ?></span></td>
+                        </tr>
                     <?php endforeach; ?>
                 </table>
             </div>
@@ -335,6 +356,28 @@
     </div>
 
     <script>
+        <?php if (session()->getFlashdata('toastr_info')) :
+            $messages = session()->getFlashdata('toastr_info');
+            if (is_array($messages)) :
+                foreach ($messages as $msg) : ?>
+                    toastr.success("<?= esc($msg) ?>");
+                <?php endforeach;
+            else : ?>
+                toastr.success("<?= esc($messages) ?>");
+        <?php endif;
+        endif; ?>
+
+        <?php if (session()->getFlashdata('toastr_success')) : ?>
+            setTimeout(function() {
+                toastr.info("<?= esc(session()->getFlashdata('toastr_success')) ?>");
+            }, 1000);
+        <?php endif; ?>
+
+        <?php if (session()->getFlashdata('error')) : ?>
+            toastr.error("<?= session()->getFlashdata('error') ?>");
+        <?php endif; ?>
+
+
         function showSection(sectionId, clickedElement) {
             // Remove active class from all list items
             document.querySelectorAll('.sidebar ul li').forEach(li => {
@@ -358,7 +401,7 @@
         function showApprovedSection() {
             // Show cars-table section
             showSection('cars-table', document.querySelector('.sidebar ul li:nth-child(2)'));
-            
+
             // Scroll to the approved companies table
             document.querySelector('h3[style="margin-top: 30px;"]').scrollIntoView({
                 behavior: 'smooth'
@@ -366,4 +409,5 @@
         }
     </script>
 </body>
+
 </html>

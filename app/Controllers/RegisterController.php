@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers;
 
 class RegisterController extends BaseController
@@ -18,6 +19,63 @@ class RegisterController extends BaseController
 
         return redirect()->to('/loginpage')->with('success', 'Account created successfully.');
     }
+
+
+    public function registerRenter()
+    {
+        $userModel = new \App\Models\UserModel();
+        $renterModel = new \App\Models\RenterModel();
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        try {
+            $userData = [
+                'name'       => $this->request->getPost('name'),
+                'email'      => $this->request->getPost('email'),
+                'password'   => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
+                'role'       => 'renter',
+                'session_id' => null
+            ];
+            $userModel->insert($userData);
+            $userId = $db->insertID();
+
+            if (!$userId) {
+                throw new \Exception('Failed to create user account');
+            }
+
+            $renterData = [
+                'user_id' => $userId,
+                'birthdate' => $this->request->getPost('dob'),
+                'gender' => $this->request->getPost('gender'),
+                'phone' => $this->request->getPost('phone'),
+                'address' => $this->request->getPost('address'),
+                'license_no' => $this->request->getPost('license'),
+                'status' => 'pending'
+            ];
+            $renterModel->insert($renterData);
+
+            /*             $db->transCommit();
+            return redirect()->to('/loginpage')->with('toastr_success', 'Renter registration successful!');
+        } catch (\Exception $e) {
+            $db->transRollback();
+            return redirect()->back()
+                ->with('toastr_error', 'Registration failed: ' . $e->getMessage())
+                ->withInput();
+        } */
+            $db->transCommit();
+            return redirect()->to('/loginpage')
+                ->with('toastr_success', 'Registration successful!')
+                ->with('toastr_info', 'Waiting for admin approval.');
+        } catch (\Exception $e) {
+            $db->transRollback();
+            return redirect()->back()
+                ->with('error', 'Registration failed: ' . $e->getMessage());
+        }
+    }
+
+
+
 
     public function registerCompany()
     {
@@ -52,7 +110,6 @@ class RegisterController extends BaseController
                 'company_name' => $this->request->getPost('company_name'),
                 'address' => $this->request->getPost('address'),
                 'year_established' => $this->request->getPost('year_established'),
-                'email' => $this->request->getPost('email'),
                 'status' => 'pending'
             ];
 
@@ -60,8 +117,8 @@ class RegisterController extends BaseController
 
             $db->transCommit();
             return redirect()->to('/loginpage')
-                ->with('success', 'Registration successful! Waiting for admin approval.');
-
+                ->with('toastr_success', 'Registration successful!')
+                ->with('toastr_info', 'Waiting for admin approval.');
         } catch (\Exception $e) {
             $db->transRollback();
             return redirect()->back()
@@ -69,10 +126,10 @@ class RegisterController extends BaseController
         }
     }
 
-    public function company()
+    /* public function company()
     {
         $db = \Config\Database::connect();
-        
+
         // Start transaction
         $db->transStart();
 
@@ -86,9 +143,9 @@ class RegisterController extends BaseController
                 'role'     => 'company',
                 'session_id' => null
             ];
-            
+
             $userModel->insert($userData);
-            
+
             // Then insert into company table
             $companyModel = new \App\Models\CompanyModel();
             $companyData = [
@@ -98,15 +155,14 @@ class RegisterController extends BaseController
                 'email'     => $this->request->getPost('email'),
                 'status'    => 'pending'
             ];
-            
+
             $companyModel->insert($companyData);
 
             // Commit transaction
             $db->transCommit();
-            
+
             return redirect()->to('/loginpage')
                 ->with('success', 'Company registration successful! Awaiting admin approval.');
-        
         } catch (\Exception $e) {
             // Rollback transaction on error
             $db->transRollback();
@@ -114,5 +170,5 @@ class RegisterController extends BaseController
                 ->with('error', 'Registration failed: ' . $e->getMessage())
                 ->withInput();
         }
-    }
+    } */
 }
