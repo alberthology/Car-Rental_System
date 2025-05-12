@@ -3,22 +3,121 @@
 namespace App\Controllers;
 
 use CodeIgniter\Controller;
+use App\Models\CompanyModel;
+use App\Models\CarsModel;
+use App\Models\RenterModel;
+use App\Models\RentalModel;
+use App\Models\UserModel;
+use App\Models\FeedbackModelModel;
+
+
 
 class RenterController extends BaseController
 {
-    public function renter()
+
+
+    /* public function companylist() // ================= future proofing
     {
-        return view('renterpage'); // Make sure the view file exists in app/Views/
-    }
+        $status = 'Approved';
+
+        $companyModel = new CompanyModel();
+        return $companyModel->where('status', $status)->findAll();
+    } */
 
     public function cars()
     {
-        return view('Renter/companycars'); // Make sure the view file exists in app/Views/
+        $companyModel = new CompanyModel();
+        $carModel = new CarsModel();
+
+        $status = 'Approved';
+
+        $data = [
+            'companies' => $companyModel->where('status', $status)->findAll(),
+            'cars' => $carModel->where('status', 'Available')->findAll()
+        ];
+
+        return view('Renter/companycars', $data);
     }
+
+
+
+    public function submitRental()
+    {
+        helper(['form']);
+
+        // $carName = $this->request->getPost('carName');
+        $car_id = $this->request->getPost('car_id');
+        $carPrice = $this->request->getPost('carPrice');
+        $rentStartDate = $this->request->getPost('rentStartDate');
+        $rentEndDate = $this->request->getPost('rentEndDate');
+        // $totalDays = $this->request->getPost('totalDays');
+        $totalCost = $this->request->getPost('totalCost');
+        // $paymentMethod = $this->request->getPost('paymentMethod');
+
+        $session = session();
+        $userId = $session->get('user_id');
+
+
+        $renterModel = new RenterModel();
+        $renter = $renterModel->where('user_id', $userId)->first();
+
+        $renterId = $renter['renter_id'];
+        $status = 'Pending';
+
+
+        $data = [
+            'car_id'       => $car_id,
+            'renter_id'       => $renterId,
+            'pickup_date'     => $rentStartDate,
+            'dropoff_date'       => $rentEndDate,
+            'rental_price'      => $carPrice,
+            'total_price'     => $totalCost,
+            'status'     => $status,
+            // 'payment_method' => $paymentMethod,
+            // 'created_at'     => date('Y-m-d H:i:s')
+        ];
+        log_message('debug', 'Rental Data: ' . json_encode($data));
+        $rentalModel = new \App\Models\RentalModel();
+        if ($rentalModel->insert($data)) {
+            return $this->response->setJSON(['success' => true]);
+        } else {
+            return $this->response->setJSON(['success' => false, 'message' => 'Failed to insert record.']);
+        }
+    }
+
+
+
+    public function renter()
+    {
+
+        return view('renterpage'); // Make sure the view file exists in app/Views/
+
+    }
+
+
 
     public function rent()
     {
-        return view('Renter/rent'); // Make sure the view file exists in app/Views/
+        $companyModel = new CompanyModel();
+        $carModel = new CarsModel();
+
+        $renterModel = new RenterModel();
+        $rentalModel = new RentalModel();
+
+        $session = session();
+        $userId = $session->get('user_id');
+
+        $renter = $renterModel->where('user_id', $userId)->first();
+        $renterId = $renter['renter_id'];
+
+
+        $data = [
+            'companies' => $companyModel->findAll(),
+            'rentals' => $rentalModel->getRentalWithCarAndCompany($renterId),
+            'cars' => $carModel->where('status', 'Available')->findAll()
+        ];
+
+        return view('Renter/rent', $data);
     }
 
     public function profile()
@@ -31,76 +130,34 @@ class RenterController extends BaseController
         return view('loginpage'); // Make sure the view file exists in app/Views/
     }
 
+
+
+
+
+
+
     public function europcar()
     {
         return view('Renter/cars/europcar'); // Make sure the view file exists in app/Views/
     }
 
-    public function hertz()
-    {
-        return view('Renter/cars/hertz'); // Make sure the view file exists in app/Views/
-    }
 
-    public function avis()
+    public function bookNow()
     {
-        return view('Renter/cars/avis'); // Make sure the view file exists in app/Views/
-    }
-
-    public function alamo()
-    {
-        return view('Renter/cars/alamo'); // Make sure the view file exists in app/Views/
-    }
-
-    public function budget()
-    {
-        return view('Renter/cars/budget'); // Make sure the view file exists in app/Views/
-    }
-
-    public function national()
-    {
-        return view('Renter/cars/national'); // Make sure the view file exists in app/Views/
-    }
-    
-    public function dollar()
-    {
-        return view('Renter/cars/dollar'); // Make sure the view file exists in app/Views/
-    }
-
-    public function thrifty()
-    {
-        return view('Renter/cars/thrifty'); // Make sure the view file exists in app/Views/
-    }
-
-    public function goldcar()
-    {
-        return view('Renter/cars/goldcar'); // Make sure the view file exists in app/Views/
-    }
-
-    public function sixt()
-    {
-        return view('Renter/cars/sixt'); // Make sure the view file exists in app/Views/
-    }
-
-    public function bookNow() {
         // Here you would add the booking details to the database
         session()->setFlashdata('success', 'Your car rental has been successfully booked!');
         redirect('Renter/companycars'); // Redirect back after booking
     }
-    
+
     //europcar
-    public function confirmBooking() {
+    public function confirmBooking()
+    {
         $data['car'] = $this->request->getGet('car');
         $data['price'] = $this->request->getGet('price');
         $data['start'] = $this->request->getGet('start');
         $data['end'] = $this->request->getGet('end');
         $data['total'] = $this->request->getGet('total');
-    
+
         return view('confirm_booking', $data);
     }
-
-    
-    
-    
-    
-
 }

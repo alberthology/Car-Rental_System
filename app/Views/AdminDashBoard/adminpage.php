@@ -7,6 +7,13 @@
     <title>Admin Dashboard</title>
 
 
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-qLsk5GvYqAAMzE3R9PZT6kBe/NvFvUovE+4SogKe0V1lZcZnDJNn1CqLxOZyV8B5" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-B41KcXwi0PqE+i4V0L5LLQh+AxGoTpaWy4MwUX4hPUIaU4V1YkG8nA5bK0Enj5It" crossorigin="anonymous"></script>
+
+    <!-- Sweet Alert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Toastr CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
@@ -178,7 +185,7 @@
             <li onclick="showSection('dashboard', this)" class="active">Homepage</li>
             <li onclick="showSection('cars-table', this)">Manage Rental</li>
             <li onclick="showSection('renters-table', this)">Manage Renter</li>
-            <li><a href="<?= base_url('/logout') ?>">Logout</a></li>
+            <li><a href="<?= base_url('/logout') ?>" id="logoutLink">Logout</a></li>
         </ul>
     </div>
 
@@ -191,42 +198,15 @@
         <div id="dashboard" class="content-section active">
             <div class="dashboard-grid">
                 <div class="dashboard-card" onclick="showSection('cars-table', document.querySelector('.sidebar ul li:nth-child(2)'))">
-                    <h3>Request Company Rental (30)</h3>
+                    <h3>Request Company Rental (<?= $pendingCompanyCount ?>)</h3>
                     <p>Click to view requests</p>
                 </div>
                 <div class="dashboard-card" onclick="showApprovedSection()">
-                    <h3>Approved Company Rental (25)</h3>
+                    <h3>Approved Company Rental (<?= $approvedCompanyCount ?>)</h3>
                     <p>Click to view approved companies</p>
                 </div>
             </div>
 
-            <div class="content-section">
-                <h2>Pending Company Approvals</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Company Name</th>
-                            <th>Email</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($pending_companies ?? [] as $company): ?>
-                            <tr>
-                                <td><?= esc($company['company_name']) ?></td>
-                                <td><?= esc($company['status']) ?></td>
-                                <td>
-                                    <a href="<?= base_url('admin/approve/' . $company['company_id']) ?>"
-                                        class="approve-btn">Approve</a>
-                                    <a href="<?= base_url('admin/decline/' . $company['company_id']) ?>"
-                                        class="decline-btn">Decline</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
         </div>
 
         <!-- Manage Rental Section -->
@@ -241,9 +221,9 @@
                     <tr>
                         <th>Company ID</th>
                         <th>Company Name</th>
+                        <th>Email</th>
                         <th>Address</th>
                         <th>Year</th>
-                        <th>Email</th>
                         <th>Request Status</th>
                         <th>Actions</th>
                     </tr>
@@ -251,6 +231,7 @@
                         <tr>
                             <td><?= esc($company['company_id']) ?></td>
                             <td><?= esc($company['company_name']) ?></td>
+                            <td><?= esc($company['user_email']) ?></td>
                             <td><?= esc($company['address']) ?></td>
                             <td><?= esc($company['year_established']) ?></td>
                             <td><?= esc($company['status']) ?></td>
@@ -269,16 +250,17 @@
                     <tr>
                         <th>Company ID</th>
                         <th>Company Name</th>
+                        <th>Email</th>
                         <th>Address</th>
                         <th>Year</th>
-                        <th>Email</th>
                         <th>Account Status</th>
-                        <th>Action</th>
+                        <!-- <th>Action</th> -->
                     </tr>
                     <?php foreach ($approved_companies ?? [] as $company): ?>
                         <tr>
                             <td><?= esc($company['company_id']) ?></td>
                             <td><?= esc($company['company_name']) ?></td>
+                            <td><?= esc($company['user_email']) ?></td>
                             <td><?= esc($company['address']) ?></td>
                             <td><?= esc($company['year_established']) ?></td>
                             <td><span style="color: #27ae60; font-weight: bold;"><?= esc($company['status']) ?></span></td>
@@ -308,6 +290,8 @@
                     <?php foreach ($pending_renters ?? [] as $renter): ?>
                         <tr>
                             <td><?= esc($renter['renter_id']) ?></td>
+                            <td><?= esc($renter['user_name']) ?></td>
+                            <td><?= esc($renter['user_email']) ?></td>
                             <td><?= esc($renter['phone']) ?></td>
                             <td><?= esc($renter['address']) ?></td>
                             <td><?= esc($renter['birthdate']) ?></td>
@@ -342,6 +326,8 @@
                     <?php foreach ($approved_renters ?? [] as $renter): ?>
                         <tr>
                             <td><?= esc($renter['renter_id']) ?></td>
+                            <td><?= esc($renter['user_name']) ?></td>
+                            <td><?= esc($renter['user_email']) ?></td>
                             <td><?= esc($renter['phone']) ?></td>
                             <td><?= esc($renter['address']) ?></td>
                             <td><?= esc($renter['birthdate']) ?></td>
@@ -356,6 +342,30 @@
     </div>
 
     <script>
+        // swal config - Roy 
+        document.getElementById('logoutLink').addEventListener('click', function(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: 'Notice',
+                text: "You are about to log out.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Confirm',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    // window.location.href = this.href;
+                    window.location.href = "<?= base_url('/logout') ?>";
+                }
+            });
+        });
+
+        // Toastr configuration - ROY
+
         <?php if (session()->getFlashdata('toastr_info')) :
             $messages = session()->getFlashdata('toastr_info');
             if (is_array($messages)) :
@@ -376,6 +386,10 @@
         <?php if (session()->getFlashdata('error')) : ?>
             toastr.error("<?= session()->getFlashdata('error') ?>");
         <?php endif; ?>
+
+
+
+        // current script
 
 
         function showSection(sectionId, clickedElement) {

@@ -84,10 +84,10 @@ class Auth extends BaseController
             ->getRowArray();
 
         if ($user && password_verify($password, $user['password'])) {
-            // Check if user is already logged in elsewhere
-            if ($user['session_id'] !== null) {
+            // Check if user is already logged in elsewhere - optional BUT DO NOT DELETE
+            /* if ($user['session_id'] !== null) {
                 return redirect()->back()->with('error', 'Account is already logged in on another device/browser. Please logout first.');
-            }
+            } */
 
             $session = session();
 
@@ -115,10 +115,10 @@ class Auth extends BaseController
 
                 return redirect()->to('adminpage')
                     ->with('toastr_info', 'Login successful!')
-                    ->with('toastr_success', 'Welcome back, Admin!');
+                    ->with('toastr_success', 'Welcome Admin ' . $user['name'] . '!');
             } else if ($user['role'] === 'Company' || $user['role'] === 'Renter') {
                 // Get status based on role
-                $statusTable = $user['role'] === 'Company' ? 'Company' : 'Renter';
+                $statusTable = $user['role'] === 'Company' ? 'company' : 'renters';
                 $details = $db->table($statusTable)
                     ->where('user_id', $user['user_id'])
                     ->get()
@@ -133,9 +133,9 @@ class Auth extends BaseController
 
                     $session->setFlashdata('success', 'Login successful!');
 
-                    return redirect()->to($user['role'] === 'Company' ? 'Company' : 'Renter')
+                    return redirect()->to($user['role'] === 'Company' ? 'RentalCompany/company' : 'renterpage')
                         ->with('toastr_info', 'Login successful!')
-                        ->with('toastr_success', 'Welcome back, ' . $user['name'] . '!');
+                        ->with('toastr_success', 'Welcome ' . $user['name'] . '!');
                 } else {
                     return redirect()->back()->with('error', 'Your account is still pending approval.');
                 }

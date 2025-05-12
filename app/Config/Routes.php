@@ -19,11 +19,6 @@ $routes->post('register/registerCompany', 'RegisterController::registerCompany')
 $routes->post('RegisterController/registerCompany', 'RegisterController::registerCompany');
 $routes->post('register/registerRenter', 'RegisterController::registerRenter');
 
-// UPDATED ROUTE - ROY
-// $routes->post('RegisterController/registerRenter', 'RegisterController::registerRenter');
-
-
-$routes->get('/renterpage', 'Auth::renter');
 
 // Admin Dashboard Routes - cleaned up and organized
 $routes->group('AdminDashBoard', ['namespace' => 'App\Controllers', 'filter' => 'adminauth'], function ($routes) {
@@ -39,7 +34,6 @@ $routes->group('admin', ['namespace' => 'App\Controllers'], function ($routes) {
 });
 
 
-$routes->get('RentalCompany/managerent', 'RentalController::managerent');
 $routes->get('RentalCompany/approveRental/(:num)', 'RentalController::approveRental/$1');
 $routes->get('RentalCompany/rejectRental/(:num)', 'RentalController::rejectRental/$1');
 // Remove these duplicate routes
@@ -71,6 +65,10 @@ $routes->get('Renter/profile', 'RenterController::profile');
 $routes->get('Renter/loginpage', 'RenterController::logout');
 $routes->get('Renter/cardetailsEuropcar', 'CardetailsController::index');
 $routes->get('Renter/cardetailsHertz', 'CardetailsController::index');
+
+$routes->post('Renter/companycars', 'RenterController::submitRental');
+
+
 
 // company
 $routes->get('RentalCompany/company', 'CompanyController::company');
@@ -110,6 +108,8 @@ $routes->post('/manage-cars/update-status', 'CarController::updateStatus');
 
 
 
+
+
 // rental
 $routes->get('RentalCompany/managerent', 'RentalController::managerent');
 $routes->get('RentalCompany/approveRental/(:num)', 'RentalController::approveRental/$1');
@@ -144,3 +144,6 @@ $routes->get('/admin', 'AdminController::admin');
 $routes->get('/admin/dashboard', 'AdminController::dashboard');
 $routes->get('/admin/approve/(:num)', 'AdminController::approve/$1');
 $routes->get('/admin/decline/(:num)', 'AdminController::decline/$1');
+
+
+$routes->post('/admin/fetchPendingCompanies', 'AdminController::fetchPendingCompanies');

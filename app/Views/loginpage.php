@@ -142,16 +142,7 @@
           <div class="container">
             <div class="card">
               <div class="card-body p-4">
-                <?php if (session()->has('error')): ?>
-                  <div class="alert alert-danger">
-                    <?= session('error') ?>
-                  </div>
-                <?php endif; ?>
-                <?php if (session()->has('success')): ?>
-                  <div class="alert alert-success">
-                    <?= session('success') ?>
-                  </div>
-                <?php endif; ?>
+
                 <!-- <a href="<?= base_url('/loginpage') ?>" class="btn-black"> <i class="fas fa-arrow-left"></i></a> -->
                 <h3 class="text-center mb-4">Create Account</h3>
                 <ul class="nav nav-tabs mb-4" role="tablist" aria-label="Registration tabs">

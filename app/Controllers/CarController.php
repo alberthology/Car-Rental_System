@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\CompanyModel;
 use App\Models\CarsModel;
 use CodeIgniter\Controller;
 
@@ -39,7 +40,6 @@ class CarController extends Controller
         }
 
         $rules = [
-            'company_id' => 'required|numeric',
             'model' => 'required|min_length[2]',
             'brand' => 'required|min_length[2]',
             'year' => 'required|numeric',
@@ -54,10 +54,22 @@ class CarController extends Controller
             ]);
         }
 
+        $session = session();
+        $userId = $session->get('user_id');
+        // $userRole = $session->get('role');
+
+        $companyModel = new CompanyModel();
+        $company = $companyModel->where('user_id', $userId)->first();
+
+
+        $companyId = $company['company_id'];
+
         $data = [
-            'company_id' => $this->request->getPost('company_id'),
+            'company_id' => $companyId,
             'model' => $this->request->getPost('model'),
             'brand' => $this->request->getPost('brand'),
+            'plate_no' => $this->request->getPost('plate_no'),
+            'price_per_day' => $this->request->getPost('price_per_day'),
             'year' => $this->request->getPost('year'),
             'status' => $this->request->getPost('status')
         ];
@@ -67,7 +79,7 @@ class CarController extends Controller
             log_message('debug', 'Attempting to insert car data: ' . json_encode($data));
 
             $carId = $this->carsModel->insert($data);
-            
+
             if ($carId === false) {
                 // Log database errors
                 log_message('error', 'Database Error: ' . print_r($this->carsModel->errors(), true));
@@ -75,7 +87,7 @@ class CarController extends Controller
             }
 
             $car = $this->carsModel->find($carId);
-            
+
             if (!$car) {
                 throw new \Exception('Car was inserted but could not be retrieved');
             }
@@ -87,7 +99,7 @@ class CarController extends Controller
             ]);
         } catch (\Exception $e) {
             log_message('error', 'Error adding car: ' . $e->getMessage());
-            
+
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Failed to add car to database',

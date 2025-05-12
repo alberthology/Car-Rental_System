@@ -1,9 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rental Company Dashboard</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-qLsk5GvYqAAMzE3R9PZT6kBe/NvFvUovE+4SogKe0V1lZcZnDJNn1CqLxOZyV8B5" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-B41KcXwi0PqE+i4V0L5LLQh+AxGoTpaWy4MwUX4hPUIaU4V1YkG8nA5bK0Enj5It" crossorigin="anonymous"></script>
+
+    <!-- Sweet Alert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    <!-- jQuery (required for Toastr) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -110,7 +126,8 @@
             margin-top: 10px;
         }
 
-        th, td {
+        th,
+        td {
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid #ddd;
@@ -121,15 +138,42 @@
             color: white;
         }
 
-        .approve-btn { background: #27ae60; }
-        .reject-btn { background: #c0392b; }
-        .track-btn { background: #3498db; }
+        .approve-btn {
+            background: #27ae60;
+        }
 
-        .status-pending { color: #f39c12; font-weight: bold; }
-        .status-approved { color: #27ae60; font-weight: bold; }
-        .status-rejected { color: #c0392b; font-weight: bold; }
-        .status-damaged { color: #e74c3c; font-weight: bold; }
-        .status-unavailable { color: #95a5a6; font-weight: bold; }
+        .reject-btn {
+            background: #c0392b;
+        }
+
+        .track-btn {
+            background: #3498db;
+        }
+
+        .status-pending {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .status-approved {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .status-rejected {
+            color: #c0392b;
+            font-weight: bold;
+        }
+
+        .status-damaged {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .status-unavailable {
+            color: #95a5a6;
+            font-weight: bold;
+        }
 
         #map {
             height: 400px;
@@ -137,6 +181,7 @@
             margin-top: 20px;
             border-radius: 8px;
         }
+
         .notification-icon {
             font-size: 25px;
             cursor: pointer;
@@ -145,6 +190,7 @@
         .notification-icon span {
             font-size: 12px;
         }
+
         /* Notification Styles */
         .notification-container {
             position: relative;
@@ -181,7 +227,7 @@
             right: 0;
             background: white;
             min-width: 220px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             border-radius: 5px;
             z-index: 100;
         }
@@ -215,211 +261,260 @@
         }
     </style>
 </head>
+
 <body>
 
-<!-- Sidebar -->
-<div class="sidebar">
-    <h2>Rental Company Dashboard</h2>
-    <ul>
-        <li><a href="<?= base_url('RentalCompany/company') ?>">Homepage</a></li>
-        <li><a href="<?= base_url('RentalCompany/managecars') ?>">Manage Cars</a></li>
-        <li class="active"><a href="<?= base_url('RentalCompany/managerent') ?>">Manage Rent</a></li>
-        <li><a href="<?= base_url('RentalCompany/reports') ?>">Reports</a></li>
-        <li><a href="<?= base_url('/logout') ?>">Logout</a></li>    </ul>
-</div>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Rental Company Dashboard</h2>
+        <ul>
+            <li><a href="<?= base_url('RentalCompany/company') ?>">Homepage</a></li>
+            <li><a href="<?= base_url('RentalCompany/managecars') ?>">Manage Cars</a></li>
+            <li class="active"><a href="<?= base_url('RentalCompany/managerent') ?>">Manage Rent</a></li>
+            <li><a href="<?= base_url('RentalCompany/reports') ?>">Reports</a></li>
+            <li><a href="<?= base_url('/logout') ?>" id="logoutLink">Logout</a></li>
 
-<!-- Main Content -->
-<div class="main-content">
-<div class="nav-bar-card" style="display: flex; justify-content: space-between; align-items: center;">
-        <h1>Car Rental Management System</h1>
+        </ul>
+    </div>
 
-        <!-- Notification Bell -->
-        <div class="notification-container">
-            <div class="notification-bell" onclick="toggleNotifications()" title="Notifications">
-                🔔
-                <span class="notification-badge">3</span>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="nav-bar-card" style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Car Rental Management System</h1>
+
+            <!-- Notification Bell -->
+            <div class="notification-container">
+                <div class="notification-bell" onclick="toggleNotifications()" title="Notifications">
+                    🔔
+                    <span class="notification-badge">3</span>
+                </div>
+
+                <!-- Dropdown Content -->
+                <div id="notificationDropdown" class="notification-dropdown">
+                    <a href="<?= base_url('RentalCompany/managecars') ?>">
+                        <strong>Manage Cars</strong>
+                        <small>2 new car requests</small>
+                    </a>
+                    <a href="<?= base_url('RentalCompany/managerent') ?>">
+                        <strong>Manage Rent</strong>
+                        <small>5 pending rentals</small>
+                    </a>
+                    <a href="<?= base_url('RentalCompany/reports') ?>">
+                        <strong>Reports</strong>
+                        <small>Monthly report ready</small>
+                    </a>
+                </div>
             </div>
 
-            <!-- Dropdown Content -->
-            <div id="notificationDropdown" class="notification-dropdown">
-                <a href="<?= base_url('RentalCompany/managecars') ?>">
-                    <strong>Manage Cars</strong>
-                    <small>2 new car requests</small>
-                </a>
-                <a href="<?= base_url('RentalCompany/managerent') ?>">
-                    <strong>Manage Rent</strong>
-                    <small>5 pending rentals</small>
-                </a>
-                <a href="<?= base_url('RentalCompany/reports') ?>">
-                    <strong>Reports</strong>
-                    <small>Monthly report ready</small>
-                </a>
-            </div>
         </div>
 
-    </div>
+        <!-- Tab Buttons -->
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="showSection('approval-section', this)">Approve Rentals</button>
+            <button class="tab-btn" onclick="showSection('damage-section', this)">Damaged/Unavailable Cars</button>
+            <button class="tab-btn" onclick="showSection('tracking-section', this)">Track Cars</button>
+        </div>
 
-    <!-- Tab Buttons -->
-    <div class="tab-buttons">
-        <button class="tab-btn active" onclick="showSection('approval-section', this)">Approve Rentals</button>
-        <button class="tab-btn" onclick="showSection('damage-section', this)">Damaged/Unavailable Cars</button>
-        <button class="tab-btn" onclick="showSection('tracking-section', this)">Track Cars</button>
-    </div>
+        <!-- Approve Rentals Section -->
+        <div class="content-section active" id="approval-section">
+            <h2>Approve or Reject Rentals</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Car Model</th>
+                        <th>Plate No</th>
+                        <th>Pickup Date</th>
+                        <th>Drop-off Date</th>
+                        <th>Pickup Location</th>
+                        <th>Drop-off Location</th>
+                        <th>Rental Price</th>
+                        <th>Total Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($rentals as $rental): ?>
+                        <tr>
+                            <td><?= $rental['rental_id'] ?></td>
+                            <td><?= $rental['model'] ?></td>
+                            <td><?= $rental['plate_no'] ?></td>
+                            <td><?= $rental['pickup_date'] ?></td>
+                            <td><?= $rental['dropoff_date'] ?></td>
+                            <td><?= $rental['pickup_location'] ?></td>
+                            <td><?= $rental['dropoff_location'] ?></td>
+                            <td>₱<?= number_format($rental['rental_price'], 2) ?></td>
+                            <td>₱<?= number_format($rental['total_price'], 2) ?></td>
+                            <td><span class="status-<?= strtolower($rental['status']) ?>"><?= $rental['status'] ?></span></td>
+                            <td>
+                                <?php if ($rental['status'] === 'pending'): ?>
+                                    <a href="<?= base_url('RentalCompany/approveRental/' . $rental['id']) ?>"
+                                        class="approve-btn">✓ Approve</a>
+                                    <a href="<?= base_url('RentalCompany/rejectRental/' . $rental['id']) ?>"
+                                        class="reject-btn">✗ Reject</a>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
 
-    <!-- Approve Rentals Section -->
-    <div class="content-section active" id="approval-section">
-    <h2>Approve or Reject Rentals</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Car Model</th>
-                <th>Plate No</th>
-                <th>Pickup Date</th>
-                <th>Drop-off Date</th>
-                <th>Pickup Location</th>
-                <th>Drop-off Location</th>
-                <th>Rental Price</th>
-                <th>Total Price</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($rentals as $rental): ?>
-            <tr>
-                <td><?= $rental['id'] ?></td>
-                <td><?= $rental['car_model'] ?></td>
-                <td><?= $rental['plate_no'] ?></td>
-                <td><?= $rental['pickup_date'] ?></td>
-                <td><?= $rental['dropoff_date'] ?></td>
-                <td><?= $rental['pickup_location'] ?></td>
-                <td><?= $rental['dropoff_location'] ?></td>
-                <td>₱<?= number_format($rental['rental_price'], 2) ?></td>
-                <td>₱<?= number_format($rental['total_price'], 2) ?></td>
-                <td><span class="status-<?= strtolower($rental['status']) ?>"><?= $rental['status'] ?></span></td>
-                <td>
-                    <?php if($rental['status'] === 'pending'): ?>
-                    <a href="<?= base_url('RentalCompany/approveRental/'.$rental['id']) ?>" 
-                       class="approve-btn">✓ Approve</a>
-                    <a href="<?= base_url('RentalCompany/rejectRental/'.$rental['id']) ?>" 
-                       class="reject-btn">✗ Reject</a>
-                    <?php endif; ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-</div>
-
-   <!-- Damaged/Unavailable Cars Section -->
-<div class="content-section" id="damage-section">
-    <h2>Damaged or Unavailable Cars</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Car ID</th>
-                <th>Car Model</th>
-                <th>Status</th>
-                <th>Damage Description</th> <!-- New column -->
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>CAR005</td>
-                <td>Toyota Corolla</td>
-                <td><span class="status-damaged">Damaged</span></td>
-                <td>Broken headlight, dented front bumper</td> <!-- Added damage details -->
-            </tr>
-            <tr>
-                <td>CAR012</td>
-                <td>Honda Civic</td>
-                <td><span class="status-damaged">Damaged</span></td>
-                <td>Scratched doors, engine overheating</td>
-            </tr>
-            <tr>
-                <td>CAR018</td>
-                <td>Ford Explorer</td>
-                <td><span class="status-damaged">Unavailable</span></td>
-                <td>Flat tire, battery issue</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+        <!-- Damaged/Unavailable Cars Section -->
+        <div class="content-section" id="damage-section">
+            <h2>Damaged or Unavailable Cars</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Car ID</th>
+                        <th>Car Model</th>
+                        <th>Status</th>
+                        <th>Damage Description</th> <!-- New column -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CAR005</td>
+                        <td>Toyota Corolla</td>
+                        <td><span class="status-damaged">Damaged</span></td>
+                        <td>Broken headlight, dented front bumper</td> <!-- Added damage details -->
+                    </tr>
+                    <tr>
+                        <td>CAR012</td>
+                        <td>Honda Civic</td>
+                        <td><span class="status-damaged">Damaged</span></td>
+                        <td>Scratched doors, engine overheating</td>
+                    </tr>
+                    <tr>
+                        <td>CAR018</td>
+                        <td>Ford Explorer</td>
+                        <td><span class="status-damaged">Unavailable</span></td>
+                        <td>Flat tire, battery issue</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
 
-   <!-- Track Rented Cars Section -->
-<div class="content-section" id="tracking-section">
-    <h2>Track Rented Cars</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Car Image</th>
-                <th>Car Model</th>
-                <th>Renter</th>
-                <th>Pickup Date</th>
-                <th>Return Date</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><img src="<?= base_url('public/assets/images/mustang.jpg') ?>" width="100" alt="Mustang"></td>
-                <td>Ford Mustang</td>
-                <td>John Amoguis</td>
-                <td>2025-03-15</td>
-                <td>2025-03-20</td>
-                <td><button class="track-btn" onclick="trackCar('Mustang')">📍 Track Location</button></td>
-            </tr>
-            <tr>
-                <td><img src="<?= base_url('public/assets/images/camaro.jpg') ?>" width="100" alt="Camaro"></td>
-                <td>Chevrolet Camaro</td>
-                <td>Mia Zayas</td>
-                <td>2025-03-18</td>
-                <td>2025-03-25</td>
-                <td><button class="track-btn" onclick="trackCar('Camaro')">📍 Track Location</button></td>
-            </tr>
-        </tbody>
-    </table>
+        <!-- Track Rented Cars Section -->
+        <div class="content-section" id="tracking-section">
+            <h2>Track Rented Cars</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Car Image</th>
+                        <th>Car Model</th>
+                        <th>Renter</th>
+                        <th>Pickup Date</th>
+                        <th>Return Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><img src="<?= base_url('public/assets/images/mustang.jpg') ?>" width="100" alt="Mustang"></td>
+                        <td>Ford Mustang</td>
+                        <td>John Amoguis</td>
+                        <td>2025-03-15</td>
+                        <td>2025-03-20</td>
+                        <td><button class="track-btn" onclick="trackCar('Mustang')">📍 Track Location</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="<?= base_url('public/assets/images/camaro.jpg') ?>" width="100" alt="Camaro"></td>
+                        <td>Chevrolet Camaro</td>
+                        <td>Mia Zayas</td>
+                        <td>2025-03-18</td>
+                        <td>2025-03-25</td>
+                        <td><button class="track-btn" onclick="trackCar('Camaro')">📍 Track Location</button></td>
+                    </tr>
+                </tbody>
+            </table>
 
-    <!-- Map Section -->
-    <div id="map" style="height: 400px; width: 100%; margin-top: 20px; border-radius: 8px; display: none;"></div>
-</div>
+            <!-- Map Section -->
+            <div id="map" style="height: 400px; width: 100%; margin-top: 20px; border-radius: 8px; display: none;"></div>
+        </div>
 
-<script>
-    function trackCar(carModel) {
-        document.getElementById('map').style.display = 'block';
-        alert("Tracking " + carModel + "'s location...");
-        // Here you can add code to integrate Google Maps API for live tracking
-    }
-</script>
+        <script>
+            function trackCar(carModel) {
+                document.getElementById('map').style.display = 'block';
+                alert("Tracking " + carModel + "'s location...");
+                // Here you can add code to integrate Google Maps API for live tracking
+            }
+        </script>
 
-<script>
-    function showSection(sectionId, clickedBtn) {
-        document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
-        document.getElementById(sectionId).classList.add('active');
+        <script>
+            // swal config - Roy 
+            document.getElementById('logoutLink').addEventListener('click', function(e) {
+                e.preventDefault();
 
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        clickedBtn.classList.add('active');
-    }
-    // Toggle dropdown visibility
-    function toggleNotifications() {
-        var dropdown = document.getElementById("notificationDropdown");
-        if (dropdown) {
-            dropdown.classList.toggle("show");
-        }
-    }
+                Swal.fire({
+                    title: 'Notice',
+                    text: "You are about to log out.",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Confirm',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(event) {
-        var dropdown = document.getElementById("notificationDropdown");
-        var bell = document.querySelector('.notification-bell');
-        
-        if (dropdown && bell && !bell.contains(event.target) && !dropdown.contains(event.target)) {
-            dropdown.classList.remove("show");
-        }
-    });
-</script>
+                        // window.location.href = this.href;
+                        window.location.href = "<?= base_url('/logout') ?>";
+                    }
+                });
+            });
+
+            // Toastr configuration - ROY
+
+            <?php if (session()->getFlashdata('toastr_info')) :
+                $messages = session()->getFlashdata('toastr_info');
+                if (is_array($messages)) :
+                    foreach ($messages as $msg) : ?>
+                        toastr.success("<?= esc($msg) ?>");
+                    <?php endforeach;
+                else : ?>
+                    toastr.success("<?= esc($messages) ?>");
+            <?php endif;
+            endif; ?>
+
+            <?php if (session()->getFlashdata('toastr_success')) : ?>
+                setTimeout(function() {
+                    toastr.info("<?= esc(session()->getFlashdata('toastr_success')) ?>");
+                }, 1000);
+            <?php endif; ?>
+
+            <?php if (session()->getFlashdata('error')) : ?>
+                toastr.error("<?= session()->getFlashdata('error') ?>");
+            <?php endif; ?>
+
+            function showSection(sectionId, clickedBtn) {
+                document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+                document.getElementById(sectionId).classList.add('active');
+
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                clickedBtn.classList.add('active');
+            }
+            // Toggle dropdown visibility
+            function toggleNotifications() {
+                var dropdown = document.getElementById("notificationDropdown");
+                if (dropdown) {
+                    dropdown.classList.toggle("show");
+                }
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                var dropdown = document.getElementById("notificationDropdown");
+                var bell = document.querySelector('.notification-bell');
+
+                if (dropdown && bell && !bell.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.classList.remove("show");
+                }
+            });
+        </script>
 
 </body>
+
 </html>
