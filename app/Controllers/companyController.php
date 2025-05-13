@@ -12,9 +12,17 @@ class CompanyController extends BaseController
     public function company()
     {
         $carsModel = new \App\Models\CarsModel();
+        $companyModel = new \App\Models\CompanyModel();
+
+        $session = session();
+        $userId = $session->get('user_id');
+        $company = $companyModel->where('user_id', $userId)->first();
+
+        $companyId = $company['company_id'];
 
         $counts = $carsModel
             ->select('status, COUNT(*) as total')
+            ->where('company_id', $companyId)
             ->whereIn('status', ['Available', 'Rented', 'Damaged', 'Unavailable'])
             ->groupBy('status')
             ->findAll();

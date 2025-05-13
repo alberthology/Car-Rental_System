@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\CompanyModel;
 use App\Models\CarsModel;
+use \App\Models\CarPhotosModel;
 use CodeIgniter\Controller;
 
 class CarController extends Controller
@@ -78,12 +79,34 @@ class CarController extends Controller
             // Log the data being inserted
             log_message('debug', 'Attempting to insert car data: ' . json_encode($data));
 
+            // Save the car data
             $carId = $this->carsModel->insert($data);
 
             if ($carId === false) {
-                // Log database errors
                 log_message('error', 'Database Error: ' . print_r($this->carsModel->errors(), true));
                 throw new \Exception('Failed to insert car data');
+            }
+
+            // ✅ Handle image upload
+            $img = $this->request->getFile('car_photo');
+            if ($img && $img->isValid() && !$img->hasMoved()) {
+
+                // ✅ Make sure upload directory exists
+                if (!is_dir('uploads/cars')) {
+                    mkdir('uploads/cars', 0777, true);
+                }
+
+                // ✅ Move file to uploads folder
+                $newName = $img->getRandomName();
+                $img->move('uploads/cars/', $newName);
+
+                // Save image path to car_photos table
+                $photoModel = new \App\Models\CarPhotosModel(); // Make sure this model exists
+                $photoModel->insert([
+                    'car_id'     => $carId,
+                    'photo_path' => 'uploads/cars/' . $newName,
+                    'caption'    => null
+                ]);
             }
 
             $car = $this->carsModel->find($carId);
@@ -94,7 +117,7 @@ class CarController extends Controller
 
             return $this->response->setJSON([
                 'success' => true,
-                'message' => 'Car added successfully',
+                'message' => 'Car and photo added successfully',
                 'car' => $car
             ]);
         } catch (\Exception $e) {
@@ -102,7 +125,7 @@ class CarController extends Controller
 
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Failed to add car to database',
+                'message' => 'Duplicate plate number or other error occurred',
                 'error' => $e->getMessage(),
                 'debug_info' => [
                     'post_data' => $this->request->getPost(),

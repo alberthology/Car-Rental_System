@@ -5,6 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Renter Dashboard</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -162,7 +176,8 @@
             <li><a href="<?= base_url('Renter/companycars') ?>">Company Cars</a></li>
             <li class="active"><a href="<?= base_url('Renter/rent') ?>">Renter</a></li>
             <li><a href="<?= base_url('Renter/profile') ?>">Profile</a></li>
-            <li><a href="<?= base_url('/logout') ?>">Logout</a></li>
+            <li><a href="<?= base_url('/logout') ?>" id="logoutLink">Logout</a></li>
+
         </ul>
     </div>
 
@@ -177,38 +192,63 @@
         <div class="main-content">
             <div class="dashboard">
                 <h2>Customer Renter Information</h2>
-                <div class="table-container">
-                    <table class="rented-table">
+                <!-- <div class=""> -->
+                <table id="companyTable">
+                    <thead>
+
                         <tr>
                             <th>Company Rented</th>
-                            <th>Car Model</th>
+                            <th>Car Rented</th>
                             <th>Plate#</th>
-                            <th>Pick-up Date</th>
+                            <!--<th>Pick-up Date</th>
                             <th>Pick-up Location</th>
                             <th>Drop-off Date</th>
                             <th>Drop-off Location</th>
                             <th>Rental Price</th>
-                            <th>Total Price</th>
+                            <th>Total Price</th> -->
                             <th>Status</th>
+                            <th>Option</th>
                         </tr>
+                    </thead>
+
+                    <tbody>
                         <?php foreach ($rentals as $rental): ?>
 
                             <tr>
                                 <td><?= esc($rental['company_name']) ?></td>
-                                <td><?= esc($rental['model']) ?></td>
+                                <td><?= esc($rental['brand']) ?> <?= esc($rental['model']) ?></td>
                                 <td><?= esc($rental['plate_no']) ?></td>
-                                <td><?= esc($rental['pickup_date']) ?></td>
-                                <td><?= esc($rental['pickup_location']) ?></td>
-                                <td><?= esc($rental['dropoff_date']) ?></td>
-                                <td><?= esc($rental['dropoff_location']) ?></td>
-                                <td><?= esc($rental['rental_price']) ?></td>
-                                <td><?= esc($rental['total_price']) ?></td>
-                                <td><?= esc($rental['status']) ?></td>
+                                <td><span class=""><?= esc($rental['status']) ?></span></td>
+                                <td>
+                                    <button
+                                        type="button"
+                                        class="btn btn-secondary view-details-btn"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#detailsModal"
+
+                                        data-company="<?= esc($rental['company_name']) ?>"
+                                        data-model="<?= esc($rental['model']) ?>"
+                                        data-brand="<?= esc($rental['brand']) ?>"
+                                        data-plate="<?= esc($rental['plate_no']) ?>"
+
+                                        data-pickup_date="<?= esc((new DateTime($rental['pickup_date']))->format('F j, Y')) ?>"
+                                        data-pickup_location="<?= esc($rental['pickup_location']) ?>"
+                                        data-dropoff_date="<?= esc((new DateTime($rental['dropoff_date']))->format('F j, Y')) ?>"
+                                        data-dropoff_location="<?= esc($rental['dropoff_location']) ?>"
+                                        data-rental_price="<?= esc($rental['rental_price']) ?>"
+                                        data-total_price="<?= esc($rental['total_price']) ?>"
+
+                                        data-status="<?= esc($rental['status']) ?>"
+                                        data-address="<?= esc($rental['address']) ?>">
+                                        View Details
+                                    </button>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
+                    </tbody>
 
-                    </table>
-                </div>
+                </table>
+                <!-- </div> -->
             </div>
 
             <!-- Feedback Section -->
@@ -228,8 +268,171 @@
 
         </div>
 
+        <!-- Modal -->
+        <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="detailsModalLabel">Rental Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+
+                                <label class="fw-bold">Company Rented:</label>
+                                <p><span id="modalCompany"></span></p>
+
+
+                            </div>
+                            <div class="col-md-6">
+                                <label class="fw-bold">Company Address:</label>
+                                <p> <span id="modalAddress"></span></p>
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="fw-bold">Car Rented:</label>
+                                <p><span id="modalBrand"></span> <span id="modalModel"></span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="fw-bold">Plate No:</label>
+                                <p> <span id="modalPlate"></span></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="fw-bold">Pick-up date:</label>
+                                <p> <span id="modalPickup_date"></span> <span id="modalModel"></span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="fw-bold">Drop-off date:</label>
+                                <p> <span id="modalDropoff_date"></span></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="fw-bold">Pick-up location:</label>
+                                <p><span id="modalPickup_location"></span> <span id="modalModel"></span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="fw-bold">Drop-off location:</label>
+                                <p><span id="modalDropoff_location"></span></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="fw-bold">Rental Cost per day:</label>
+                                <p>₱<span id="modalRental_price"></span> <span id="modalModel"></span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="fw-bold">Total Cost:</label>
+                                <p>₱<span id="modalTotal_price"></span></p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- <div class="col-md-6"></div> -->
+                            <div class="col-md-12">
+                                <label class="fw-bold">Status:</label>
+                                <p><span id="modalStatus"></span></p>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
         <!-- JavaScript -->
         <script>
+            // swal config - Roy 
+            document.getElementById('logoutLink').addEventListener('click', function(e) {
+                e.preventDefault();
+
+                Swal.fire({
+                    title: 'Notice',
+                    text: "You are about to log out.",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Confirm',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        // window.location.href = this.href;
+                        window.location.href = "<?= base_url('/logout') ?>";
+                    }
+                });
+            });
+
+            // Toastr configuration - ROY
+
+            <?php if (session()->getFlashdata('toastr_info')) :
+                $messages = session()->getFlashdata('toastr_info');
+                if (is_array($messages)) :
+                    foreach ($messages as $msg) : ?>
+                        toastr.success("<?= esc($msg) ?>");
+                    <?php endforeach;
+                else : ?>
+                    toastr.success("<?= esc($messages) ?>");
+            <?php endif;
+            endif; ?>
+
+            <?php if (session()->getFlashdata('toastr_success')) : ?>
+                setTimeout(function() {
+                    toastr.info("<?= esc(session()->getFlashdata('toastr_success')) ?>");
+                }, 1000);
+            <?php endif; ?>
+
+            <?php if (session()->getFlashdata('error')) : ?>
+                toastr.error("<?= session()->getFlashdata('error') ?>");
+            <?php endif; ?>
+
+            // DataTable initialization
+            $(document).ready(function() {
+                $('#companyTable').DataTable({
+                    pageLength: 5
+                });
+            });
+            // Modal functionality
+            // Initialize the modal when the document is ready
+            document.addEventListener('DOMContentLoaded', function() {
+                const detailButtons = document.querySelectorAll('.view-details-btn');
+
+                detailButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        document.getElementById('modalCompany').textContent = button.getAttribute('data-company');
+                        document.getElementById('modalAddress').textContent = button.getAttribute('data-address');
+                        document.getElementById('modalBrand').textContent = button.getAttribute('data-brand');
+                        document.getElementById('modalModel').textContent = button.getAttribute('data-model');
+                        document.getElementById('modalPlate').textContent = button.getAttribute('data-plate');
+
+                        document.getElementById('modalPickup_date').textContent = button.getAttribute('data-pickup_date');
+                        document.getElementById('modalPickup_location').textContent = button.getAttribute('data-pickup_location');
+                        document.getElementById('modalDropoff_date').textContent = button.getAttribute('data-dropoff_date');
+                        document.getElementById('modalDropoff_location').textContent = button.getAttribute('data-dropoff_location');
+                        document.getElementById('modalRental_price').textContent = button.getAttribute('data-rental_price');
+                        document.getElementById('modalTotal_price').textContent = button.getAttribute('data-total_price');
+
+                        document.getElementById('modalStatus').textContent = button.getAttribute('data-status');
+                    });
+                });
+            });
+
+
             function showSection(sectionId, clickedElement) {
                 document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
                 if (clickedElement) {

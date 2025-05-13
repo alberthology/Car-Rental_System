@@ -15,8 +15,8 @@ class RentalModel extends Model
         'renter_id',
         'pickup_date',
         'dropoff_date',
-        /* 'pickup_location',
-        'dropoff_location', */
+        'pickup_location',
+        'dropoff_location',
         'rental_price',
         'total_price',
         'status'
@@ -27,8 +27,8 @@ class RentalModel extends Model
         'renter_id' => 'required',
         'pickup_date' => 'required|valid_date',
         'dropoff_date' => 'required|valid_date',
-        /* 'pickup_location' => 'required',
-        'dropoff_location' => 'required', */
+        'pickup_location' => 'required',
+        'dropoff_location' => 'required',
         'rental_price' => 'required|numeric',
         'total_price' => 'required|numeric',
         'status' => 'required'

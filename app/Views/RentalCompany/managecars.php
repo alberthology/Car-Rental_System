@@ -170,25 +170,6 @@
             margin-left: 350px;
         }
 
-        /* Add these styles for the form */
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
 
         .button-group {
             margin-top: 20px;
@@ -414,34 +395,57 @@
                 <div class="modal-body">
                     <!-- <div id="errorMessages" style="display:none; color:red;"></div> -->
 
-                    <form id="addCarForm">
+                    <form id="addCarForm" enctype="multipart/form-data">
                         <?= csrf_field() ?>
                         <!-- Hidden company_id field populated from session -->
-                        <!-- <input type="" id="company_id" name="company_id" value="<?= session()->get('company_id') ?>" required> -->
 
-                        <div class="form-group">
-                            <label for="model">Car Model:</label>
-                            <input type="text" id="model" name="model" required>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold" for="model">Car Model:</label>
+                                    <input class="form-control" type="text" id="model" name="model" required>
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="form-group">
-                            <label for="brand">Brand:</label>
-                            <input type="text" id="brand" name="brand" required>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold" for="brand">Brand:</label>
+                                    <input class="form-control" type="text" id="brand" name="brand" required>
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="form-group">
-                            <label for="plate_no">plate Number:</label>
-                            <input type="text" id="plate_no" name="plate_no" required>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold" for="plate_no">Plate Number:</label>
+                                    <input class="form-control" type="text" id="plate_no" name="plate_no" required>
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="form-group">
-                            <label for="price_per_day">Price per Day:</label>
-                            <input type="text" id="price_per_day" name="price_per_day" required>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold" for="car_photo">Car Picture:</label>
+                                    <input class="form-control" type="file" id="car_photo" name="car_photo" required>
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="form-group">
-                            <label for="year">Year:</label>
-                            <input type="number" id="year" name="year" required>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold" for="price_per_day">Price per Day:</label>
+                                    <input class="form-control" type="text" id="price_per_day" name="price_per_day" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold" for="year">Year:</label>
+                                    <input class="form-control" type="number" id="year" name="year" required>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Hidden status field -->

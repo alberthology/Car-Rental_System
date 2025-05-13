@@ -9,6 +9,7 @@ use App\Models\RenterModel;
 use App\Models\RentalModel;
 use App\Models\UserModel;
 use App\Models\FeedbackModelModel;
+use \App\Models\CarPhotosModel;
 
 
 
@@ -28,12 +29,25 @@ class RenterController extends BaseController
     {
         $companyModel = new CompanyModel();
         $carModel = new CarsModel();
+        $photoModel = new CarPhotosModel();
 
         $status = 'Approved';
 
+        $companies = $companyModel->where('status', $status)->findAll();
+        $cars = $carModel->where('status', 'Available')->findAll();
+
+        // Fetch all photos and group them by car_id
+        $photos = $photoModel->findAll();
+        $photosByCarId = [];
+
+        foreach ($photos as $photo) {
+            $photosByCarId[$photo['car_id']][] = $photo;
+        }
+
         $data = [
-            'companies' => $companyModel->where('status', $status)->findAll(),
-            'cars' => $carModel->where('status', 'Available')->findAll()
+            'companies' => $companies,
+            'cars' => $cars,
+            'photosByCarId' => $photosByCarId
         ];
 
         return view('Renter/companycars', $data);
@@ -50,6 +64,8 @@ class RenterController extends BaseController
         $carPrice = $this->request->getPost('carPrice');
         $rentStartDate = $this->request->getPost('rentStartDate');
         $rentEndDate = $this->request->getPost('rentEndDate');
+        $pickupLocation = $this->request->getPost('pickupLocation');
+        $dropoffLocation = $this->request->getPost('dropoffLocation');
         // $totalDays = $this->request->getPost('totalDays');
         $totalCost = $this->request->getPost('totalCost');
         // $paymentMethod = $this->request->getPost('paymentMethod');
@@ -69,6 +85,8 @@ class RenterController extends BaseController
             'car_id'       => $car_id,
             'renter_id'       => $renterId,
             'pickup_date'     => $rentStartDate,
+            'pickup_location' => $pickupLocation,
+            'dropoff_location' => $dropoffLocation,
             'dropoff_date'       => $rentEndDate,
             'rental_price'      => $carPrice,
             'total_price'     => $totalCost,
