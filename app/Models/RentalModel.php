@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class RentalModel extends Model
 {
     protected $table = 'rentals';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'rental_id';
     protected $useAutoIncrement = true;
     protected $returnType = 'array';
     protected $allowedFields = [
@@ -15,8 +15,8 @@ class RentalModel extends Model
         'renter_id',
         'pickup_date',
         'dropoff_date',
-        'pickup_location',
-        'dropoff_location',
+        /* 'pickup_location',
+        'dropoff_location', */
         'rental_price',
         'total_price',
         'status'
@@ -27,8 +27,8 @@ class RentalModel extends Model
         'renter_id' => 'required',
         'pickup_date' => 'required|valid_date',
         'dropoff_date' => 'required|valid_date',
-        'pickup_location' => 'required',
-        'dropoff_location' => 'required',
+        /* 'pickup_location' => 'required',
+        'dropoff_location' => 'required', */
         'rental_price' => 'required|numeric',
         'total_price' => 'required|numeric',
         'status' => 'required'
@@ -45,10 +45,12 @@ class RentalModel extends Model
 
     public function getCompanyRentals($companyId)
     {
-        return $this->select('rentals.*, cars.model, cars.plate_no, renters.renter_id, renters.gender, renters.phone, renters.address, renters.license_no')
+        return $this->select('rentals.*, cars.model, cars.brand, cars.plate_no, renters.renter_id, renters.user_id, users.name, renters.birthdate, renters.gender, renters.phone, renters.address, renters.license_no')
             ->join('cars', 'rentals.car_id = cars.car_id')
             ->join('renters', 'rentals.renter_id = renters.renter_id')
+            ->join('users', 'renters.user_id = users.user_id')
             ->where('cars.company_id', $companyId)
+            ->where('rentals.status', 'Paid')
             ->findAll();
     }
 }

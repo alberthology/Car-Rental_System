@@ -350,13 +350,13 @@
                                 <input type="date" id="rentStartDate" class="form-control" required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Drop-off Date</label>
+                                <label class="form-label">Return Date</label>
                                 <input type="date" id="rentEndDate" class="form-control" required>
                             </div>
                         </div>
 
                         <!-- Meetup location-->
-                        <div class="row">
+                        <!-- <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Pick-up location</label>
                                 <input type="text" id="pickupLocation" class="form-control" required>
@@ -365,7 +365,7 @@
                                 <label class="form-label">Drop-off location</label>
                                 <input type="text" id="dropoffLocation" class="form-control" required>
                             </div>
-                        </div>
+                        </div> -->
 
                         <!-- Summary -->
                         <div class="row">
@@ -480,8 +480,8 @@
             document.getElementById('rentStartDate').value = "";
             document.getElementById('rentEndDate').value = "";
 
-            document.getElementById('pickupLocation').value = "";
-            document.getElementById('dropoffLocation').value = "";
+            /* document.getElementById('pickupLocation').value = "";
+            document.getElementById('dropoffLocation').value = ""; */
 
             document.getElementById('totalDays').value = "";
             document.getElementById('totalCost').value = "";
@@ -528,8 +528,8 @@
             const rentStartDate = document.getElementById('rentStartDate').value;
             const rentEndDate = document.getElementById('rentEndDate').value;
 
-            const pickupLocation = document.getElementById('pickupLocation').value;
-            const dropoffLocation = document.getElementById('dropoffLocation').value;
+            /* const pickupLocation = document.getElementById('pickupLocation').value;
+            const dropoffLocation = document.getElementById('dropoffLocation').value; */
 
             const totalCost = document.getElementById('totalCost').value.replace("₱", "").replace("$", "");
 
@@ -538,8 +538,8 @@
             formData.append('carPrice', carPrice);
             formData.append('rentStartDate', rentStartDate);
             formData.append('rentEndDate', rentEndDate);
-            formData.append('pickupLocation', pickupLocation);
-            formData.append('dropoffLocation', dropoffLocation);
+            /* formData.append('pickupLocation', pickupLocation);
+            formData.append('dropoffLocation', dropoffLocation); */
             formData.append('totalCost', totalCost);
 
             console.log([...formData.entries()]); // Debugging

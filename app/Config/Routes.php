@@ -112,6 +112,11 @@ $routes->post('/manage-cars/update-status', 'CarController::updateStatus');
 
 // rental
 $routes->get('RentalCompany/managerent', 'RentalController::managerent');
+
+$routes->post('RentalCompany/updateDropoffDate', 'RentalController::updateDropoffDate');
+$routes->post('RentalCompany/returnCar', 'RentalController::returnCar');
+
+
 $routes->get('RentalCompany/approveRental/(:num)', 'RentalController::approveRental/$1');
 $routes->get('RentalCompany/rejectRental/(:num)', 'RentalController::rejectRental/$1');
 $routes->get('/admin/dashboard', 'AdminController::dashboard');

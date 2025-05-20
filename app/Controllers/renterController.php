@@ -59,16 +59,13 @@ class RenterController extends BaseController
     {
         helper(['form']);
 
-        // $carName = $this->request->getPost('carName');
         $car_id = $this->request->getPost('car_id');
         $carPrice = $this->request->getPost('carPrice');
         $rentStartDate = $this->request->getPost('rentStartDate');
         $rentEndDate = $this->request->getPost('rentEndDate');
-        $pickupLocation = $this->request->getPost('pickupLocation');
-        $dropoffLocation = $this->request->getPost('dropoffLocation');
-        // $totalDays = $this->request->getPost('totalDays');
         $totalCost = $this->request->getPost('totalCost');
-        // $paymentMethod = $this->request->getPost('paymentMethod');
+        /*  $pickupLocation = $this->request->getPost('pickupLocation');
+        $dropoffLocation = $this->request->getPost('dropoffLocation'); */
 
         $session = session();
         $userId = $session->get('user_id');
@@ -78,26 +75,30 @@ class RenterController extends BaseController
         $renter = $renterModel->where('user_id', $userId)->first();
 
         $renterId = $renter['renter_id'];
-        $status = 'Pending';
+        $status = 'Paid';
 
 
         $data = [
             'car_id'       => $car_id,
-            'renter_id'       => $renterId,
-            'pickup_date'     => $rentStartDate,
-            'pickup_location' => $pickupLocation,
-            'dropoff_location' => $dropoffLocation,
-            'dropoff_date'       => $rentEndDate,
-            'rental_price'      => $carPrice,
-            'total_price'     => $totalCost,
-            'status'     => $status,
-            // 'payment_method' => $paymentMethod,
-            // 'created_at'     => date('Y-m-d H:i:s')
+            'renter_id'    => $renterId,
+            'pickup_date'  => $rentStartDate,
+            'dropoff_date' => $rentEndDate,
+            'rental_price' => $carPrice,
+            'total_price'  => $totalCost,
+            'status'       => $status,
         ];
         log_message('debug', 'Rental Data: ' . json_encode($data));
         $rentalModel = new \App\Models\RentalModel();
         if ($rentalModel->insert($data)) {
-            return $this->response->setJSON(['success' => true]);
+            // Update car status to "Rented"
+            $CarsModel = new \App\Models\CarsModel();
+            $updated = $CarsModel->update($car_id, ['status' => 'Rented']);
+
+            if ($updated) {
+                return $this->response->setJSON(['success' => true]);
+            } else {
+                return $this->response->setJSON(['success' => false, 'message' => 'Car status update failed.']);
+            }
         } else {
             return $this->response->setJSON(['success' => false, 'message' => 'Failed to insert record.']);
         }
@@ -126,8 +127,15 @@ class RenterController extends BaseController
         $userId = $session->get('user_id');
 
         $renter = $renterModel->where('user_id', $userId)->first();
-        $renterId = $renter['renter_id'];
 
+        if (!$renter) {
+            // Option 1: Redirect to profile creation or show error
+            return redirect()->to('/renter/profile')->with('error', 'Please complete your renter profile first.');
+            // Option 2: Or show a custom error view/message
+            // return view('errors/custom_error', ['message' => 'Renter profile not found.']);
+        }
+
+        $renterId = $renter['renter_id'];
 
         $data = [
             'companies' => $companyModel->findAll(),

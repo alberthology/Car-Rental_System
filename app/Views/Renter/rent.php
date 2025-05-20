@@ -197,6 +197,7 @@
                     <thead>
 
                         <tr>
+                            <th>No.</th>
                             <th>Company Rented</th>
                             <th>Car Rented</th>
                             <th>Plate#</th>
@@ -212,9 +213,14 @@
                     </thead>
 
                     <tbody>
-                        <?php foreach ($rentals as $rental): ?>
+                        <?php
+                        $no = 1;
+
+                        foreach ($rentals as $rental): ?>
 
                             <tr>
+                                <td><?php echo $no++; ?></td>
+
                                 <td><?= esc($rental['company_name']) ?></td>
                                 <td><?= esc($rental['brand']) ?> <?= esc($rental['model']) ?></td>
                                 <td><?= esc($rental['plate_no']) ?></td>
@@ -232,11 +238,9 @@
                                         data-plate="<?= esc($rental['plate_no']) ?>"
 
                                         data-pickup_date="<?= esc((new DateTime($rental['pickup_date']))->format('F j, Y')) ?>"
-                                        data-pickup_location="<?= esc($rental['pickup_location']) ?>"
                                         data-dropoff_date="<?= esc((new DateTime($rental['dropoff_date']))->format('F j, Y')) ?>"
-                                        data-dropoff_location="<?= esc($rental['dropoff_location']) ?>"
-                                        data-rental_price="<?= esc($rental['rental_price']) ?>"
-                                        data-total_price="<?= esc($rental['total_price']) ?>"
+                                        data-rental_price="<?= number_format($rental['rental_price'], 2) ?>"
+                                        data-total_price="<?= number_format($rental['total_price'], 2) ?>"
 
                                         data-status="<?= esc($rental['status']) ?>"
                                         data-address="<?= esc($rental['address']) ?>">
@@ -309,11 +313,11 @@
                                 <p> <span id="modalPickup_date"></span> <span id="modalModel"></span></p>
                             </div>
                             <div class="col-md-6">
-                                <label class="fw-bold">Drop-off date:</label>
+                                <label class="fw-bold">Return date:</label>
                                 <p> <span id="modalDropoff_date"></span></p>
                             </div>
                         </div>
-                        <div class="row">
+                        <!-- <div class="row">
                             <div class="col-md-6">
                                 <label class="fw-bold">Pick-up location:</label>
                                 <p><span id="modalPickup_location"></span> <span id="modalModel"></span></p>
@@ -322,7 +326,7 @@
                                 <label class="fw-bold">Drop-off location:</label>
                                 <p><span id="modalDropoff_location"></span></p>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="row">
                             <div class="col-md-6">
                                 <label class="fw-bold">Rental Cost per day:</label>
@@ -421,9 +425,9 @@
                         document.getElementById('modalPlate').textContent = button.getAttribute('data-plate');
 
                         document.getElementById('modalPickup_date').textContent = button.getAttribute('data-pickup_date');
-                        document.getElementById('modalPickup_location').textContent = button.getAttribute('data-pickup_location');
+                        // document.getElementById('modalPickup_location').textContent = button.getAttribute('data-pickup_location');
                         document.getElementById('modalDropoff_date').textContent = button.getAttribute('data-dropoff_date');
-                        document.getElementById('modalDropoff_location').textContent = button.getAttribute('data-dropoff_location');
+                        // document.getElementById('modalDropoff_location').textContent = button.getAttribute('data-dropoff_location');
                         document.getElementById('modalRental_price').textContent = button.getAttribute('data-rental_price');
                         document.getElementById('modalTotal_price').textContent = button.getAttribute('data-total_price');
 
